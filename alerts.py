@@ -1,6 +1,6 @@
 import pandas as pd
 
-def  check_change(df, coin, treshold_pct, minutes =5):
+def  check_change(df, coin, threshold_pct, minutes =5):
     data = df[df["coin"] == coin]
     if len(data) < 2:
         return None
@@ -11,4 +11,4 @@ def  check_change(df, coin, treshold_pct, minutes =5):
         return None
     old_price = old.iloc[-1]["price"]
     change = (latest["price"] - old_price) / old_price * 100
-    return change if abs (change) >= treshold_pct else None
+    return change if abs (change) >= threshold_pct else None
