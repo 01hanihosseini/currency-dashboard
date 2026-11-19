@@ -4,15 +4,6 @@ from datetime import datetime
 import pandas as pd
 
 
-def get_price(coin="bitcoin", currency = "usd"):
-    url = "https://api.coingecko.com/api/v3/simple/price"
-    params = {"ids": coin, "vs_currencies": currency}
-    response = requests.get(url, params=params, timeout=10)
-    response.raise_for_status()
-    data = response.json()
-    return data[coin][currency]
-
-
 
 def save_price(coin, price, path="data/prices.csv"):
     row = pd.DataFrame([{
@@ -23,8 +14,17 @@ def save_price(coin, price, path="data/prices.csv"):
     row.to_csv(path, mode="a", header=not os.path.exists(path), index=False)
 
 
+def get_prices(coins, currency="usd"):
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    params = {"ids": ",".join(coins), "vs_currencies": currency}
+    response = requests.get(url, params=params, timeout=10)
+    response.raise_for_status()
+    data = response.json()
+    return {coin: data[coin][currency] for coin in coins}
+
 
 if __name__ == "__main__":
-    price = get_price()
-    print(price)
-    save_price("bitcoin", price)
+    prices = get_prices(["bitcoin", "ethereum"])
+    print(prices)
+    for coin, price in prices.items():
+        save_price(coin, price)
